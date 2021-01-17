@@ -29,7 +29,7 @@ exports.clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
 // Returns the distance between two pips (1–6)
 const pipDistance = function (from, to) {
     const dist = Math.abs(to - from);
-    return dist <= 6 ? dist : 24 - dist;
+    return dist <= 12 ? dist : 24 - dist;
 };
 exports.Move = (from, to) => ({ from, to });
 exports.reverseMove = (move) => ({ from: move.to, to: move.from });
