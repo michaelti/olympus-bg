@@ -1,7 +1,11 @@
+//@ts-check
 const { Random, MersenneTwister19937 } = require("random-js");
 const random = new Random(MersenneTwister19937.autoSeed());
 
-// Enum-like object
+/** Enum for the player ID
+ * @readonly
+ * @enum {number}
+ */
 const Player = Object.freeze({
     neither: 0,
     white: 1,
@@ -23,15 +27,34 @@ exports.Variant = Object.freeze({
     fevga: 3,
 });
 
-// Clamps "to" in range 0–25
+/**
+ * Clamps a number in range 0–25
+ * @param {number} to - the destination of a move
+ * @returns {number} the clamped number
+ */
 exports.clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
 
-// Returns the distance between two pips (1–6)
-const pipDistance = function (from, to) {
+/**
+ * Calculates the shortest distance between two pips on the board
+ * @param {number} from - the first pip (1-24)
+ * @param {number} to - the second pip (1-24)
+ * @returns {number} the distance between the first and second (0-12)
+ */
+const pipDistance = (from, to) => {
     const dist = Math.abs(to - from);
     return dist <= 12 ? dist : 24 - dist;
 };
+/**
+ * @name Move
+ * @param {number} from 
+ * @param {number} to 
+ */
 exports.Move = (from, to) => ({ from, to });
+
+/**
+ * Reverses the values of the from and to properties of a Move object
+ * @param {{ from: number; to: number; }} move
+ */
 exports.reverseMove = (move) => ({ from: move.to, to: move.from });
 
 exports.Board = () => ({
@@ -95,8 +118,10 @@ exports.Board = () => ({
         return Player.neither;
     },
 
-    // Is the board in a state where either player has won?
-    // Returns the number of points won
+    /**
+     * Checks if the board in a state where either player has won
+     * @returns { 0 | 1 | 2 } 0 if the game is not over; 1 or 2 representing the number of points won
+     */
     isGameOver() {
         if (this.off[this.turn] === 15) {
             this.winner = this.turn;
@@ -107,7 +132,11 @@ exports.Board = () => ({
         return 0;
     },
 
-    // Validates a turn of 0–4 moves
+    /**
+     * Validates a turn of 0–4 moves
+     * @param {Object[]} moves - an array of Move objects (can be empty)
+     * @returns {number} of type TurnMessage indicating if the turn is valid
+     */
     turnValidator(moves) {
         // Validate turn length. Players must make as many moves as possible
         if (this.maxTurnLength !== moves.length) {
@@ -129,7 +158,7 @@ exports.Board = () => ({
         return TurnMessage.valid;
     },
 
-    // Dummy function, must be implemented by each backgammon variant
+    /** @abstract */
     allPossibleTurns: () => null,
 });
 
