@@ -1,51 +1,58 @@
-const { Random, MersenneTwister19937 } = require("random-js");
-const random = new Random(MersenneTwister19937.autoSeed());
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.rollDie = exports.Pip = exports.Board = exports.reverseMove = exports.Move = exports.pipDistance = exports.clamp = exports.Variant = exports.TurnMessage = exports.Player = void 0;
+const random_js_1 = require("random-js");
+const random = new random_js_1.Random(random_js_1.MersenneTwister19937.autoSeed());
 // Enum-like object
-const Player = Object.freeze({
-    neither: 0,
-    white: 1,
-    black: -1,
-});
-
-const TurnMessage = Object.freeze({
-    valid: 1,
-    validZero: 2,
-    invalid: 0,
-    invalidMoreMoves: -1,
-    invalidLongerMove: -2,
-});
-
+var Player;
+(function (Player) {
+    Player[Player["neither"] = 0] = "neither";
+    Player[Player["white"] = 1] = "white";
+    Player[Player["black"] = -1] = "black";
+})(Player = exports.Player || (exports.Player = {}));
+;
+var TurnMessage;
+(function (TurnMessage) {
+    TurnMessage[TurnMessage["valid"] = 1] = "valid";
+    TurnMessage[TurnMessage["validZero"] = 2] = "validZero";
+    TurnMessage[TurnMessage["invalid"] = 0] = "invalid";
+    TurnMessage[TurnMessage["invalidMoreMoves"] = -1] = "invalidMoreMoves";
+    TurnMessage[TurnMessage["invalidLongerMove"] = -2] = "invalidLongerMove";
+})(TurnMessage = exports.TurnMessage || (exports.TurnMessage = {}));
+;
 // Variant of backgammon
-exports.Variant = Object.freeze({
-    portes: 1,
-    plakoto: 2,
-    fevga: 3,
-});
-
+var Variant;
+(function (Variant) {
+    Variant[Variant["portes"] = 1] = "portes";
+    Variant[Variant["plakoto"] = 2] = "plakoto";
+    Variant[Variant["fevga"] = 3] = "fevga";
+})(Variant = exports.Variant || (exports.Variant = {}));
+;
 // Clamps "to" in range 0–25
-exports.clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
-
+const clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
+exports.clamp = clamp;
 // Returns the distance between two pips (1–6)
-const pipDistance = function (from, to) {
+function pipDistance(from, to) {
     const dist = Math.abs(to - from);
     return dist <= 6 ? dist : 24 - dist;
-};
-exports.Move = (from, to) => ({ from, to });
-exports.reverseMove = (move) => ({ from: move.to, to: move.from });
-
-exports.Board = () => ({
+}
+exports.pipDistance = pipDistance;
+;
+const Move = (from, to) => ({ from, to });
+exports.Move = Move;
+const reverseMove = (move) => ({ from: move.to, to: move.from });
+exports.reverseMove = reverseMove;
+const Board = () => ({
     turn: null,
     winner: null,
     off: { [Player.white]: 0, [Player.black]: 0 },
-    pips: new Array(26).fill().map(() => Pip()),
+    pips: new Array(26).fill(null).map(() => exports.Pip()),
     diceRolled: new Array(2),
     dice: new Array(2),
     recentMove: {},
     possibleTurns: null,
     maxTurnLength: 0,
     turnValidity: TurnMessage.invalid,
-
     publicProperties() {
         return {
             turn: this.turn,
@@ -62,39 +69,38 @@ exports.Board = () => ({
             state: this.state,
         };
     },
-
     rollDice() {
         // Roll a 6-sided die, 2 times
         this.diceRolled = random.dice(6, 2);
-
         // Doubles
         if (this.diceRolled[0] === this.diceRolled[1])
             this.diceRolled = this.diceRolled.concat(this.diceRolled);
-
         // Sort smallest to largest
         this.dice = [...this.diceRolled].sort((a, b) => a - b);
-
         this.maxTurnLength = 0;
         this.turnValidity = TurnMessage.invalid;
         try {
             this.possibleTurns = this.allPossibleTurns();
             for (const turn of this.possibleTurns) {
-                if (turn.length > this.maxTurnLength) this.maxTurnLength = turn.length;
+                if (turn.length > this.maxTurnLength)
+                    this.maxTurnLength = turn.length;
             }
-            if (this.maxTurnLength === 0) this.turnValidity = TurnMessage.validZero;
-        } catch (four) {
+            if (this.maxTurnLength === 0)
+                this.turnValidity = TurnMessage.validZero;
+        }
+        catch (four) {
             // Code optimization when there's a possible 4-move turn
             this.maxTurnLength = 4;
         }
     },
-
     // Returns the player who's turn it ISN'T
     otherPlayer(player = this.turn) {
-        if (player === Player.black) return Player.white;
-        if (player === Player.white) return Player.black;
+        if (player === Player.black)
+            return Player.white;
+        if (player === Player.white)
+            return Player.black;
         return Player.neither;
     },
-
     // Is the board in a state where either player has won?
     // Returns the number of points won
     isGameOver() {
@@ -106,7 +112,6 @@ exports.Board = () => ({
         }
         return 0;
     },
-
     // Validates a turn of 0–4 moves
     turnValidator(moves) {
         // Validate turn length. Players must make as many moves as possible
@@ -128,21 +133,15 @@ exports.Board = () => ({
         }
         return TurnMessage.valid;
     },
-
     // Dummy function, must be implemented by each backgammon variant
     allPossibleTurns: () => null,
 });
-
+exports.Board = Board;
 const Pip = (size = 0, owner = Player.neither) => ({
     size: size,
     top: owner,
     bot: owner,
 });
-
-const rollDie = () => random.die(6);
-
-exports.Player = Player;
-exports.TurnMessage = TurnMessage;
-exports.pipDistance = pipDistance;
 exports.Pip = Pip;
+const rollDie = () => random.die(6);
 exports.rollDie = rollDie;
