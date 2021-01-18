@@ -1,23 +1,21 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const clone = require("ramda.clone");
-const { range } = require("../util");
+import { Board, Pip, Move, Player, clamp, pipDistance } from "../game";
+import clone from "ramda.clone";
+import { range, _Move } from "../util";
 
-const Plakoto = () => ({
-    // Inherit from generic board
-    ...Board(),
+class Plakoto extends Board {
 
     // Implement Plakoto-specific methods and variables
     // Initialize the board for a game of plakoto
-    initGame() {
+    initGame(): void {
         this.pips[24] = Pip(15, Player.black); // Black moves towards pip 1 (decreasing)
         this.pips[1] = Pip(15, Player.white); // White moves towards pip 24 (increasing)
-    },
+    };
 
-    // Is the move valid?
-    // from:    Move from pip # <eg. 1>
-    // to:      Move to pip # <eg. 4>
-    // return:  Returns a boolean
-    isMoveValid(from, to) {
+    /** Is the move valid?
+     * @param from Move from pip # <eg. 1>
+     * @param to Move to pip # <eg. 4>
+     */
+    isMoveValid(from: number, to: number): boolean {
         to = clamp(to);
         if (this.pips[from].top !== this.turn) return false;
 
@@ -54,9 +52,9 @@ const Plakoto = () => ({
         }
 
         return true;
-    },
+    };
 
-    doMove(from, to) {
+    doMove(from: number, to: number) {
         to = clamp(to);
         this.recentMove = Move(from, to);
 
@@ -85,10 +83,10 @@ const Plakoto = () => ({
         // Handle dice. NOTE: this will only work for 2 distinct values or 4 identical values
         if (this.dice[0] >= pipDistance(from, to)) this.dice.shift();
         else this.dice.pop();
-    },
+    };
 
     // Returns 2D array of Move objects
-    allPossibleTurns() {
+    allPossibleTurns(): _Move[] {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
@@ -115,7 +113,7 @@ const Plakoto = () => ({
             }
         }
         return allTurns;
-    },
+    };
 
     // Is the board in a state where the game has just ended?
     // Returns the number of points won
@@ -146,7 +144,7 @@ const Plakoto = () => ({
         }
 
         return 0;
-    },
-});
+    };
+};
 
-exports.Board = Plakoto;
+export { Plakoto as Board }

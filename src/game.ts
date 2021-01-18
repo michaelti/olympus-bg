@@ -1,4 +1,5 @@
 import { Random, MersenneTwister19937 } from "random-js";
+import { _Move } from "./util";
 const random = new Random(MersenneTwister19937.autoSeed());
 
 // Enum-like object
@@ -31,10 +32,9 @@ export function pipDistance(from: number, to: number) {
     const dist = Math.abs(to - from);
     return dist <= 6 ? dist : 24 - dist;
 };
-interface _Move {
-    from: number;
-    to: number;
-}
+
+interface _Pip { size: number; top: Player; bot: Player }
+
 export const Move = (from: number, to: number) => ({ from, to });
 export const reverseMove = (move: _Move) => ({ from: move.to, to: move.from });
 
@@ -42,7 +42,7 @@ export class Board {
     turn: Player = null;
     winner: Player = null;
     off = { [Player.white]: 0, [Player.black]: 0 };
-    pips = new Array(26).fill(null).map(() => Pip());
+    pips: _Pip[] = new Array(26).fill(null).map(() => Pip());
     diceRolled = new Array(2);
     dice = new Array(2);
     recentMove = {};
@@ -134,7 +134,7 @@ export class Board {
     };
 
     // Dummy function, must be implemented by each backgammon variant
-    allPossibleTurns: () => null;
+    allPossibleTurns() { return null };
 };
 
 export const Pip = (size = 0, owner = Player.neither) => ({

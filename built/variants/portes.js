@@ -1,9 +1,11 @@
 const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
 const clone = require("ramda.clone");
 const { range } = require("../util");
-const Portes = () => (Object.assign(Object.assign({}, Board()), { 
+const Portes = () => ({
+    // Inherit from generic board
+    ...Board(),
     // Implement Portes-specific methods and variables
-    bar: {}, 
+    bar: {},
     // Initialize the board for a game of portes
     initGame() {
         this.pips[25] = Pip(0, Player.black);
@@ -150,5 +152,6 @@ const Portes = () => (Object.assign(Object.assign({}, Board()), {
             }
         }
         return allTurns;
-    } }));
+    },
+});
 exports.Board = Portes;

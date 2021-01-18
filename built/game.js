@@ -136,6 +136,9 @@ class Board {
         return TurnMessage.valid;
     }
     ;
+    // Dummy function, must be implemented by each backgammon variant
+    allPossibleTurns() { return null; }
+    ;
 }
 exports.Board = Board;
 ;

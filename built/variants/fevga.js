@@ -2,9 +2,11 @@ const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
 const clone = require("ramda.clone");
 const { range } = require("../util");
 const State = Object.freeze({ start: 1, firstAway: 2, default: 3 });
-const Fevga = () => (Object.assign(Object.assign({}, Board()), { 
+const Fevga = () => ({
+    // Inherit from generic board
+    ...Board(),
     // Implement Fevga-specific methods and variables
-    state: { [Player.white]: State.start, [Player.black]: State.start }, 
+    state: { [Player.white]: State.start, [Player.black]: State.start },
     // Initialize the board for a game of fevga
     initGame() {
         this.pips[24] = Pip(15, Player.black); // Black moves towards pip 1 (decreasing)
@@ -155,5 +157,6 @@ const Fevga = () => (Object.assign(Object.assign({}, Board()), {
             }
         }
         return allTurns;
-    } }));
+    },
+});
 exports.Board = Fevga;
