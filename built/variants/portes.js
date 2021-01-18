@@ -1,33 +1,38 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const clone = require("ramda.clone");
-const { range } = require("../util");
-const Portes = () => ({
-    // Inherit from generic board
-    ...Board(),
-    // Implement Portes-specific methods and variables
-    bar: {},
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Board = void 0;
+const game_1 = require("../game");
+const ramda_clone_1 = require("ramda.clone");
+const util_1 = require("../util");
+class Portes extends game_1.Board {
+    constructor() {
+        super(...arguments);
+        // Implement Portes-specific methods and variables
+        this.bar = { [game_1.Player.white]: this.pips[0], [game_1.Player.black]: this.pips[25] };
+    }
     // Initialize the board for a game of portes
     initGame() {
-        this.pips[25] = Pip(0, Player.black);
-        this.pips[24] = Pip(2, Player.black); // Black moves towards pip 1 (decreasing)
-        this.pips[19] = Pip(5, Player.white);
-        this.pips[17] = Pip(3, Player.white);
-        this.pips[13] = Pip(5, Player.black);
-        this.pips[12] = Pip(5, Player.white);
-        this.pips[8] = Pip(3, Player.black);
-        this.pips[6] = Pip(5, Player.black);
-        this.pips[1] = Pip(2, Player.white); // White moves towards pip 24 (increasing)
-        this.pips[0] = Pip(0, Player.white);
+        this.pips[25] = game_1.Pip(0, game_1.Player.black);
+        this.pips[24] = game_1.Pip(2, game_1.Player.black); // Black moves towards pip 1 (decreasing)
+        this.pips[19] = game_1.Pip(15, game_1.Player.white);
+        this.pips[17] = game_1.Pip(3, game_1.Player.white);
+        this.pips[13] = game_1.Pip(5, game_1.Player.black);
+        this.pips[12] = game_1.Pip(5, game_1.Player.white);
+        this.pips[8] = game_1.Pip(3, game_1.Player.black);
+        this.pips[6] = game_1.Pip(5, game_1.Player.black);
+        this.pips[1] = game_1.Pip(2, game_1.Player.white); // White moves towards pip 24 (increasing)
+        this.pips[0] = game_1.Pip(0, game_1.Player.white);
         // Aliases so we can access the bar using a Player as the key
-        this.bar[Player.black] = this.pips[25];
-        this.bar[Player.white] = this.pips[0];
-    },
+        //this.bar[Player.black] = this.pips[25];
+        //this.bar[Player.white] = this.pips[0];
+    }
+    ;
     // Is the move valid?
     // from:    Move from pip # <eg. 1>
     // to:      Move to pip # <eg. 4>
     // return:  Returns a boolean
     isMoveValid(from, to) {
-        to = clamp(to);
+        to = game_1.clamp(to);
         if (this.pips[from].top !== this.turn)
             return false;
         // Entering the board
@@ -36,27 +41,27 @@ const Portes = () => ({
                 return false;
             if (this.pips[to].top !== this.turn && this.pips[to].size > 1)
                 return false;
-            if (!this.dice.includes(pipDistance(from, to)))
+            if (!this.dice.includes(game_1.pipDistance(from, to)))
                 return false;
         }
         // Bearing off
         else if (to === 25 || to === 0) {
-            if (this.turn === Player.white && from < 19)
+            if (this.turn === game_1.Player.white && from < 19)
                 return false;
-            if (this.turn === Player.black && from > 6)
+            if (this.turn === game_1.Player.black && from > 6)
                 return false;
             // Range of all pips excluding the current player's home quadrant
-            const nonHomePips = this.turn === Player.white ? range(1, 18) : range(7, 24);
+            const nonHomePips = this.turn === game_1.Player.white ? util_1.range(1, 18) : util_1.range(7, 24);
             for (const i of nonHomePips) {
                 if (this.pips[i].top === this.turn || this.pips[i].bot === this.turn)
                     return false;
             }
             // If bearing off from an non-exact number of pips
-            if (!this.dice.includes(pipDistance(from, to))) {
+            if (!this.dice.includes(game_1.pipDistance(from, to))) {
                 // Check if there's a big enough dice
-                if (this.dice[0] > pipDistance(from, to) || this.dice[1] > pipDistance(from, to)) {
+                if (this.dice[0] > game_1.pipDistance(from, to) || this.dice[1] > game_1.pipDistance(from, to)) {
                     // Range of pips in the player's home quadrant that are further away than the pip they are trying to bear off of
-                    const farHomePips = this.turn === Player.white ? range(19, from - 1) : range(from + 1, 6);
+                    const farHomePips = this.turn === game_1.Player.white ? util_1.range(19, from - 1) : util_1.range(from + 1, 6);
                     for (const i of farHomePips) {
                         if (this.pips[i].top === this.turn || this.pips[i].bot === this.turn)
                             return false;
@@ -73,21 +78,22 @@ const Portes = () => ({
                 return false;
             if (this.pips[to].top !== this.turn && this.pips[to].size > 1)
                 return false;
-            if (!this.dice.includes(pipDistance(from, to)))
+            if (!this.dice.includes(game_1.pipDistance(from, to)))
                 return false;
         }
         return true;
-    },
+    }
+    ;
     doMove(from, to) {
-        to = clamp(to);
-        this.recentMove = Move(from, to);
+        to = game_1.clamp(to);
+        this.recentMove = game_1.Move(from, to);
         // From pip
         if (this.bar[this.turn].size > 0) {
             // Don't change owner of the bar ever
         }
         else if (this.pips[from].size === 1) {
-            this.pips[from].top = Player.neither;
-            this.pips[from].bot = Player.neither;
+            this.pips[from].top = game_1.Player.neither;
+            this.pips[from].bot = game_1.Player.neither;
         }
         else if (this.pips[from].size === 2 && this.pips[from].top !== this.pips[from].bot) {
             this.pips[from].top = this.pips[from].bot;
@@ -96,19 +102,19 @@ const Portes = () => ({
         // To pip
         if (to === 0 || to === 25) {
             // Bearing off
-            if (this.turn === Player.white)
-                this.off[Player.white]++;
-            if (this.turn === Player.black)
-                this.off[Player.black]++;
+            if (this.turn === game_1.Player.white)
+                this.off[game_1.Player.white]++;
+            if (this.turn === game_1.Player.black)
+                this.off[game_1.Player.black]++;
         }
         else {
             // Sending opponent to the bar
             if (this.pips[to].bot === this.otherPlayer()) {
                 this.bar[this.otherPlayer()].size++;
-                if (this.turn === Player.white)
-                    this.recentMove.subMove = Move(to, 25);
-                if (this.turn === Player.black)
-                    this.recentMove.subMove = Move(to, 0);
+                if (this.turn === game_1.Player.white)
+                    this.recentMove.subMove = game_1.Move(to, 25);
+                if (this.turn === game_1.Player.black)
+                    this.recentMove.subMove = game_1.Move(to, 0);
             }
             else {
                 this.pips[to].size++;
@@ -117,11 +123,12 @@ const Portes = () => ({
             this.pips[to].bot = this.turn;
         }
         // Handle dice. NOTE: this will only work for 2 distinct values or 4 identical values
-        if (this.dice[0] >= pipDistance(from, to))
+        if (this.dice[0] >= game_1.pipDistance(from, to))
             this.dice.shift();
         else
             this.dice.pop();
-    },
+    }
+    ;
     // Returns 2D array of Move objects
     allPossibleTurns() {
         if (this.dice.length === 0)
@@ -131,10 +138,10 @@ const Portes = () => ({
         for (const die of uniqueDice) {
             for (let pipIndex = 0; pipIndex <= 25; pipIndex++) {
                 if (this.pips[pipIndex].top === this.turn) {
-                    const currentMove = Move(pipIndex, clamp(this.turn * die + pipIndex));
+                    const currentMove = game_1.Move(pipIndex, game_1.clamp(this.turn * die + pipIndex));
                     if (this.isMoveValid(currentMove.from, currentMove.to)) {
                         // deep copy game board using ramda
-                        let newBoard = clone(this);
+                        let newBoard = ramda_clone_1.default(this);
                         newBoard.doMove(currentMove.from, currentMove.to);
                         const nextTurns = newBoard.allPossibleTurns();
                         if (nextTurns.length) {
@@ -152,6 +159,8 @@ const Portes = () => ({
             }
         }
         return allTurns;
-    },
-});
+    }
+    ;
+}
 exports.Board = Portes;
+;

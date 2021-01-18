@@ -45,7 +45,7 @@ export class Board {
     pips: _Pip[] = new Array(26).fill(null).map(() => Pip());
     diceRolled = new Array(2);
     dice = new Array(2);
-    recentMove = {};
+    recentMove: _Move = null;
     protected possibleTurns = null;
     protected maxTurnLength: number = 0;
     turnValidity: TurnMessage = TurnMessage.invalid;

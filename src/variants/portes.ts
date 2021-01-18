@@ -1,13 +1,12 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const clone = require("ramda.clone");
-const { range } = require("../util");
+import { Board, Pip, Move, Player, clamp, pipDistance } from "../game";
+import clone from "ramda.clone";
+import { range, _Move } from "../util";
 
-const Portes = () => ({
-    // Inherit from generic board
-    ...Board(),
+class Portes extends Board {
 
     // Implement Portes-specific methods and variables
-    bar: {},
+    bar = {};
+    //bar = { [Player.white]: this.pips[0], [Player.black]: this.pips[25] };
 
     // Initialize the board for a game of portes
     initGame() {
@@ -25,13 +24,13 @@ const Portes = () => ({
         // Aliases so we can access the bar using a Player as the key
         this.bar[Player.black] = this.pips[25];
         this.bar[Player.white] = this.pips[0];
-    },
+    };
 
     // Is the move valid?
     // from:    Move from pip # <eg. 1>
     // to:      Move to pip # <eg. 4>
     // return:  Returns a boolean
-    isMoveValid(from, to) {
+    isMoveValid(from: number, to: number) {
         to = clamp(to);
         if (this.pips[from].top !== this.turn) return false;
 
@@ -74,9 +73,9 @@ const Portes = () => ({
         }
 
         return true;
-    },
+    };
 
-    doMove(from, to) {
+    doMove(from: number, to: number) {
         to = clamp(to);
         this.recentMove = Move(from, to);
 
@@ -112,7 +111,7 @@ const Portes = () => ({
         // Handle dice. NOTE: this will only work for 2 distinct values or 4 identical values
         if (this.dice[0] >= pipDistance(from, to)) this.dice.shift();
         else this.dice.pop();
-    },
+    };
 
     // Returns 2D array of Move objects
     allPossibleTurns() {
@@ -142,7 +141,7 @@ const Portes = () => ({
             }
         }
         return allTurns;
-    },
-});
+    };
+};
 
-exports.Board = Portes;
+export { Portes as Board }

@@ -50,7 +50,7 @@ class Board {
         this.pips = new Array(26).fill(null).map(() => exports.Pip());
         this.diceRolled = new Array(2);
         this.dice = new Array(2);
-        this.recentMove = {};
+        this.recentMove = null;
         this.possibleTurns = null;
         this.maxTurnLength = 0;
         this.turnValidity = TurnMessage.invalid;

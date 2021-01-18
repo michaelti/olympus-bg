@@ -1,26 +1,23 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const clone = require("ramda.clone");
-const { range } = require("../util");
-const State = Object.freeze({ start: 1, firstAway: 2, default: 3 });
+import { Board, Pip, Move, Player, clamp, pipDistance } from "../game";
+import clone from "ramda.clone";
+import { range, _Move } from "../util";
+enum State { start = 1, firstAway = 2, default = 3 };
 
-const Fevga = () => ({
-    // Inherit from generic board
-    ...Board(),
-
+class Fevga extends Board {
     // Implement Fevga-specific methods and variables
-    state: { [Player.white]: State.start, [Player.black]: State.start },
+    state: { [key: number]: State } = { [Player.white]: State.start, [Player.black]: State.start };
 
     // Initialize the board for a game of fevga
     initGame() {
         this.pips[24] = Pip(15, Player.black); // Black moves towards pip 1 (decreasing)
         this.pips[12] = Pip(15, Player.white); // White moves towards pip 13 (decreasing)
-    },
+    };
 
     // Is the move valid?
     // from:    Move from pip # <eg. 1>
     // to:      Move to pip # <eg. 4>
     // return:  Returns a boolean
-    isMoveValid(from, to) {
+    isMoveValid(from: number, to: number): boolean {
         to = clamp(to);
         if (this.pips[from].top !== this.turn) return false;
 
@@ -77,9 +74,9 @@ const Fevga = () => ({
         }
 
         return true;
-    },
+    };
 
-    doMove(from, to) {
+    doMove(from: number, to: number): void {
         to = clamp(to);
         this.recentMove = Move(from, to);
 
@@ -117,10 +114,10 @@ const Fevga = () => ({
                 this.state[this.turn]++;
             }
         }
-    },
+    };
 
     // Returns 2D array of Move objects
-    allPossibleTurns() {
+    allPossibleTurns(): _Move[] {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
@@ -152,7 +149,7 @@ const Fevga = () => ({
             }
         }
         return allTurns;
-    },
-});
+    };
+};
 
-exports.Board = Fevga;
+export { Fevga as Board }

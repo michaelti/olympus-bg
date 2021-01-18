@@ -12,10 +12,10 @@ class Plakoto extends game_1.Board {
         this.pips[1] = game_1.Pip(15, game_1.Player.white); // White moves towards pip 24 (increasing)
     }
     ;
-    // Is the move valid?
-    // from:    Move from pip # <eg. 1>
-    // to:      Move to pip # <eg. 4>
-    // return:  Returns a boolean
+    /** Is the move valid?
+     * @param from Move from pip # <eg. 1>
+     * @param to Move to pip # <eg. 4>
+     */
     isMoveValid(from, to) {
         to = game_1.clamp(to);
         if (this.pips[from].top !== this.turn)
