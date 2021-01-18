@@ -38,17 +38,17 @@ interface _Move {
 export const Move = (from: number, to: number) => ({ from, to });
 export const reverseMove = (move: _Move) => ({ from: move.to, to: move.from });
 
-export const Board = () => ({
-    turn: null,
-    winner: null,
-    off: { [Player.white]: 0, [Player.black]: 0 },
-    pips: new Array(26).fill(null).map(() => Pip()),
-    diceRolled: new Array(2),
-    dice: new Array(2),
-    recentMove: {},
-    possibleTurns: null,
-    maxTurnLength: 0,
-    turnValidity: TurnMessage.invalid,
+export class Board {
+    turn: Player = null;
+    winner: Player = null;
+    off = { [Player.white]: 0, [Player.black]: 0 };
+    pips = new Array(26).fill(null).map(() => Pip());
+    diceRolled = new Array(2);
+    dice = new Array(2);
+    recentMove = {};
+    protected possibleTurns = null;
+    protected maxTurnLength: number = 0;
+    turnValidity: TurnMessage = TurnMessage.invalid;
 
     publicProperties() {
         return {
@@ -61,13 +61,13 @@ export const Board = () => ({
             recentMove: this.recentMove,
             turnValidity: this.turnValidity,
             // Portes properties
-            bar: this.bar,
+            //bar: this.bar,
             // Fevga properties
-            state: this.state,
+            //state: this.state,
         };
-    },
+    };
 
-    rollDice() {
+    rollDice(): void {
         // Roll a 6-sided die, 2 times
         this.diceRolled = random.dice(6, 2);
 
@@ -90,18 +90,18 @@ export const Board = () => ({
             // Code optimization when there's a possible 4-move turn
             this.maxTurnLength = 4;
         }
-    },
+    };
 
     // Returns the player who's turn it ISN'T
     otherPlayer(player = this.turn) {
         if (player === Player.black) return Player.white;
         if (player === Player.white) return Player.black;
         return Player.neither;
-    },
+    };
 
     // Is the board in a state where either player has won?
     // Returns the number of points won
-    isGameOver() {
+    isGameOver(): 0 | 1 | 2 {
         if (this.off[this.turn] === 15) {
             this.winner = this.turn;
             this.turn = Player.neither;
@@ -109,10 +109,10 @@ export const Board = () => ({
             return this.off[this.otherPlayer(this.winner)] === 0 ? 2 : 1;
         }
         return 0;
-    },
+    };
 
     // Validates a turn of 0–4 moves
-    turnValidator(moves: _Move[]) {
+    turnValidator(moves: _Move[]): TurnMessage {
         // Validate turn length. Players must make as many moves as possible
         if (this.maxTurnLength !== moves.length) {
             // unless they have 14 checkers off and are bearing off their 15th (final)
@@ -131,11 +131,11 @@ export const Board = () => ({
             }
         }
         return TurnMessage.valid;
-    },
+    };
 
     // Dummy function, must be implemented by each backgammon variant
-    allPossibleTurns: () => null,
-});
+    allPossibleTurns: () => null;
+};
 
 export const Pip = (size = 0, owner = Player.neither) => ({
     size: size,
