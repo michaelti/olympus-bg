@@ -1,5 +1,4 @@
 {
-    "type": "module",
     "name": "olympus-bg",
     "version": "1.0.0",
     "engines": {
@@ -15,7 +14,7 @@
         "type": "git",
         "url": "git+https://github.com/michaelti/olympus-bg.git"
     },
-    "author": "",
+    "author": "blaiseIT",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/michaelti/olympus-bg/issues"
@@ -27,11 +26,12 @@
         "jsxBracketSameLine": true
     },
     "dependencies": {
-        "@types/random-js": "^2.0.0",
-        "ramda.clone": "^0.26.1",
+        "ramda": "^0.27.1",
         "random-js": "^2.1.0"
     },
     "devDependencies": {
+        "@types/random-js": "^2.0.0",
+        "@types/ramda": "^0.27.34",
         "eslint": "^7.5.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-plugin-node": "^11.1.0",

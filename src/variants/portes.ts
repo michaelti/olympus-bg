@@ -1,5 +1,5 @@
 import { Board, Pip, Move, Player, clamp, pipDistance } from "../game";
-import clone from "ramda.clone";
+import { clone } from "ramda";
 import { range, _Move } from "../util";
 
 class Portes extends Board {
@@ -9,7 +9,7 @@ class Portes extends Board {
     //bar = { [Player.white]: this.pips[0], [Player.black]: this.pips[25] };
 
     // Initialize the board for a game of portes
-    initGame() {
+    initGame = function () {
         this.pips[25] = Pip(0, Player.black);
         this.pips[24] = Pip(2, Player.black); // Black moves towards pip 1 (decreasing)
         this.pips[19] = Pip(5, Player.white);
@@ -30,7 +30,7 @@ class Portes extends Board {
     // from:    Move from pip # <eg. 1>
     // to:      Move to pip # <eg. 4>
     // return:  Returns a boolean
-    isMoveValid(from: number, to: number) {
+    isMoveValid = function (from: number, to: number) {
         to = clamp(to);
         if (this.pips[from].top !== this.turn) return false;
 
@@ -75,7 +75,7 @@ class Portes extends Board {
         return true;
     };
 
-    doMove(from: number, to: number) {
+    doMove = function (from: number, to: number) {
         to = clamp(to);
         this.recentMove = Move(from, to);
 
@@ -114,7 +114,7 @@ class Portes extends Board {
     };
 
     // Returns 2D array of Move objects
-    allPossibleTurns() {
+    allPossibleTurns = function () {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;

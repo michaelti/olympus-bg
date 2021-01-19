@@ -45,12 +45,12 @@ export class Board {
     pips: _Pip[] = new Array(26).fill(null).map(() => Pip());
     diceRolled = new Array(2);
     dice = new Array(2);
-    recentMove: _Move = null;
+    recentMove: any = {};
     protected possibleTurns = null;
     protected maxTurnLength: number = 0;
     turnValidity: TurnMessage = TurnMessage.invalid;
 
-    publicProperties() {
+    publicProperties = function () {
         return {
             turn: this.turn,
             winner: this.winner,
@@ -67,7 +67,7 @@ export class Board {
         };
     };
 
-    rollDice(): void {
+    rollDice = function (): void {
         // Roll a 6-sided die, 2 times
         this.diceRolled = random.dice(6, 2);
 
@@ -93,7 +93,7 @@ export class Board {
     };
 
     // Returns the player who's turn it ISN'T
-    otherPlayer(player = this.turn) {
+    otherPlayer = function (player = this.turn): Player {
         if (player === Player.black) return Player.white;
         if (player === Player.white) return Player.black;
         return Player.neither;
@@ -101,7 +101,7 @@ export class Board {
 
     // Is the board in a state where either player has won?
     // Returns the number of points won
-    isGameOver(): 0 | 1 | 2 {
+    isGameOver = function (): 0 | 1 | 2 {
         if (this.off[this.turn] === 15) {
             this.winner = this.turn;
             this.turn = Player.neither;
@@ -112,7 +112,7 @@ export class Board {
     };
 
     // Validates a turn of 0–4 moves
-    turnValidator(moves: _Move[]): TurnMessage {
+    turnValidator = function (moves: _Move[]): TurnMessage {
         // Validate turn length. Players must make as many moves as possible
         if (this.maxTurnLength !== moves.length) {
             // unless they have 14 checkers off and are bearing off their 15th (final)
@@ -134,7 +134,7 @@ export class Board {
     };
 
     // Dummy function, must be implemented by each backgammon variant
-    allPossibleTurns() { return null };
+    //allPossibleTurns = function () { return null };
 };
 
 export const Pip = (size = 0, owner = Player.neither) => ({

@@ -3,7 +3,7 @@
         "outDir": "./built",
         "allowJs": true,
         "target": "es2020",
-        "module": "commonjs"
+        "module": "commonjs",
     },
     "include": [
         "./src/**/*"

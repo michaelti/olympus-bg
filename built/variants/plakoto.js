@@ -2,9 +2,69 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Board = void 0;
 const game_1 = require("../game");
-const ramda_clone_1 = require("ramda.clone");
+const ramda_1 = require("ramda");
 const util_1 = require("../util");
 class Plakoto extends game_1.Board {
+    constructor() {
+        super(...arguments);
+        // Returns 2D array of Move objects
+        this.allPossibleTurns = function () {
+            if (this.dice.length === 0)
+                return [];
+            let allTurns = [];
+            const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
+            for (const die of uniqueDice) {
+                for (let pipIndex = 1; pipIndex <= 24; pipIndex++) {
+                    if (this.pips[pipIndex].top === this.turn) {
+                        const currentMove = game_1.Move(pipIndex, game_1.clamp(this.turn * die + Number(pipIndex)));
+                        if (this.isMoveValid(currentMove.from, currentMove.to)) {
+                            // deep copy game board using ramda
+                            let newBoard = ramda_1.clone(this);
+                            newBoard.doMove(currentMove.from, currentMove.to);
+                            const nextTurns = newBoard.allPossibleTurns();
+                            if (nextTurns.length) {
+                                for (const nextMoves of nextTurns) {
+                                    allTurns.push([currentMove, ...nextMoves]);
+                                    if ([currentMove, ...nextMoves].length === 4)
+                                        throw "Possible turn of length 4 detected";
+                                }
+                            }
+                            else {
+                                allTurns.push([currentMove]);
+                            }
+                        }
+                    }
+                }
+            }
+            return allTurns;
+        };
+        // Is the board in a state where the game has just ended?
+        // Returns the number of points won
+        this.isGameOver = function () {
+            const home = { [game_1.Player.white]: this.pips[1], [game_1.Player.black]: this.pips[24] };
+            // Both player's starting checkers have been trapped: game is a draw
+            if (this.pips[1].top !== this.pips[1].bot && this.pips[24].top !== this.pips[24].bot) {
+                this.winner = game_1.Player.neither;
+                this.turn = game_1.Player.neither;
+                return 1;
+            }
+            // Player has borne off all of their checkers
+            else if (this.off[this.turn] === 15) {
+                this.winner = this.turn;
+                this.turn = game_1.Player.neither;
+                // if the other player has born off 0 checkers, return 2 points
+                return this.off[this.otherPlayer(this.winner)] === 0 ? 2 : 1;
+            }
+            // If other player's starting checker has been pinned and current player's is safe
+            else if (home[this.otherPlayer()].top !== home[this.otherPlayer()].bot &&
+                home[this.turn].bot !== this.turn) {
+                this.winner = this.turn;
+                this.turn = game_1.Player.neither;
+                return 2;
+            }
+            return 0;
+        };
+    }
     // Implement Plakoto-specific methods and variables
     // Initialize the board for a game of plakoto
     initGame() {
@@ -92,65 +152,6 @@ class Plakoto extends game_1.Board {
             this.dice.shift();
         else
             this.dice.pop();
-    }
-    ;
-    // Returns 2D array of Move objects
-    allPossibleTurns() {
-        if (this.dice.length === 0)
-            return [];
-        let allTurns = [];
-        const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
-        for (const die of uniqueDice) {
-            for (let pipIndex = 1; pipIndex <= 24; pipIndex++) {
-                if (this.pips[pipIndex].top === this.turn) {
-                    const currentMove = game_1.Move(pipIndex, game_1.clamp(this.turn * die + Number(pipIndex)));
-                    if (this.isMoveValid(currentMove.from, currentMove.to)) {
-                        // deep copy game board using ramda
-                        let newBoard = ramda_clone_1.default(this);
-                        newBoard.doMove(currentMove.from, currentMove.to);
-                        const nextTurns = newBoard.allPossibleTurns();
-                        if (nextTurns.length) {
-                            for (const nextMoves of nextTurns) {
-                                allTurns.push([currentMove, ...nextMoves]);
-                                if ([currentMove, ...nextMoves].length === 4)
-                                    throw "Possible turn of length 4 detected";
-                            }
-                        }
-                        else {
-                            allTurns.push([currentMove]);
-                        }
-                    }
-                }
-            }
-        }
-        return allTurns;
-    }
-    ;
-    // Is the board in a state where the game has just ended?
-    // Returns the number of points won
-    isGameOver() {
-        const home = { [game_1.Player.white]: this.pips[1], [game_1.Player.black]: this.pips[24] };
-        // Both player's starting checkers have been trapped: game is a draw
-        if (this.pips[1].top !== this.pips[1].bot && this.pips[24].top !== this.pips[24].bot) {
-            this.winner = game_1.Player.neither;
-            this.turn = game_1.Player.neither;
-            return 1;
-        }
-        // Player has borne off all of their checkers
-        else if (this.off[this.turn] === 15) {
-            this.winner = this.turn;
-            this.turn = game_1.Player.neither;
-            // if the other player has born off 0 checkers, return 2 points
-            return this.off[this.otherPlayer(this.winner)] === 0 ? 2 : 1;
-        }
-        // If other player's starting checker has been pinned and current player's is safe
-        else if (home[this.otherPlayer()].top !== home[this.otherPlayer()].bot &&
-            home[this.turn].bot !== this.turn) {
-            this.winner = this.turn;
-            this.turn = game_1.Player.neither;
-            return 2;
-        }
-        return 0;
     }
     ;
 }
