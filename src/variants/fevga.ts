@@ -117,7 +117,7 @@ class Fevga extends Board {
     };
 
     // Returns 2D array of Move objects
-    allPossibleTurns = function (): _Move[] {
+    allPossibleTurns() {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;

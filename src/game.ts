@@ -38,7 +38,7 @@ interface _Pip { size: number; top: Player; bot: Player }
 export const Move = (from: number, to: number) => ({ from, to });
 export const reverseMove = (move: _Move) => ({ from: move.to, to: move.from });
 
-export class Board {
+export abstract class Board {
     turn: Player = null;
     winner: Player = null;
     off = { [Player.white]: 0, [Player.black]: 0 };
@@ -50,7 +50,7 @@ export class Board {
     protected maxTurnLength: number = 0;
     turnValidity: TurnMessage = TurnMessage.invalid;
 
-    publicProperties = function () {
+    publicProperties() {
         return {
             turn: this.turn,
             winner: this.winner,
@@ -67,7 +67,7 @@ export class Board {
         };
     };
 
-    rollDice = function (): void {
+    rollDice(): void {
         // Roll a 6-sided die, 2 times
         this.diceRolled = random.dice(6, 2);
 
@@ -93,7 +93,7 @@ export class Board {
     };
 
     // Returns the player who's turn it ISN'T
-    otherPlayer = function (player = this.turn): Player {
+    otherPlayer(player = this.turn): Player {
         if (player === Player.black) return Player.white;
         if (player === Player.white) return Player.black;
         return Player.neither;
@@ -101,7 +101,7 @@ export class Board {
 
     // Is the board in a state where either player has won?
     // Returns the number of points won
-    isGameOver = function (): 0 | 1 | 2 {
+    isGameOver(): 0 | 1 | 2 {
         if (this.off[this.turn] === 15) {
             this.winner = this.turn;
             this.turn = Player.neither;
@@ -112,7 +112,7 @@ export class Board {
     };
 
     // Validates a turn of 0–4 moves
-    turnValidator = function (moves: _Move[]): TurnMessage {
+    turnValidator(moves: _Move[]): TurnMessage {
         // Validate turn length. Players must make as many moves as possible
         if (this.maxTurnLength !== moves.length) {
             // unless they have 14 checkers off and are bearing off their 15th (final)
@@ -134,7 +134,7 @@ export class Board {
     };
 
     // Dummy function, must be implemented by each backgammon variant
-    //allPossibleTurns = function () { return null };
+    abstract allPossibleTurns(): any; // Should be _Move[]
 };
 
 export const Pip = (size = 0, owner = Player.neither) => ({

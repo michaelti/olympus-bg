@@ -9,7 +9,7 @@ class Portes extends Board {
     //bar = { [Player.white]: this.pips[0], [Player.black]: this.pips[25] };
 
     // Initialize the board for a game of portes
-    initGame = function () {
+    initGame() {
         this.pips[25] = Pip(0, Player.black);
         this.pips[24] = Pip(2, Player.black); // Black moves towards pip 1 (decreasing)
         this.pips[19] = Pip(5, Player.white);
@@ -30,7 +30,7 @@ class Portes extends Board {
     // from:    Move from pip # <eg. 1>
     // to:      Move to pip # <eg. 4>
     // return:  Returns a boolean
-    isMoveValid = function (from: number, to: number) {
+    isMoveValid(from: number, to: number) {
         to = clamp(to);
         if (this.pips[from].top !== this.turn) return false;
 
@@ -75,7 +75,7 @@ class Portes extends Board {
         return true;
     };
 
-    doMove = function (from: number, to: number) {
+    doMove(from: number, to: number) {
         to = clamp(to);
         this.recentMove = Move(from, to);
 
@@ -114,7 +114,7 @@ class Portes extends Board {
     };
 
     // Returns 2D array of Move objects
-    allPossibleTurns = function () {
+    allPossibleTurns() {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
@@ -124,7 +124,7 @@ class Portes extends Board {
                     const currentMove = Move(pipIndex, clamp(this.turn * die + pipIndex));
                     if (this.isMoveValid(currentMove.from, currentMove.to)) {
                         // deep copy game board using ramda
-                        let newBoard = clone(this);
+                        let newBoard = Object.assign(new Portes(), clone(this));
                         newBoard.doMove(currentMove.from, currentMove.to);
                         const nextTurns = newBoard.allPossibleTurns();
                         if (nextTurns.length) {

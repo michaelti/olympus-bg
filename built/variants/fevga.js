@@ -16,44 +16,6 @@ class Fevga extends game_1.Board {
         super(...arguments);
         // Implement Fevga-specific methods and variables
         this.state = { [game_1.Player.white]: State.start, [game_1.Player.black]: State.start };
-        // Returns 2D array of Move objects
-        this.allPossibleTurns = function () {
-            if (this.dice.length === 0)
-                return [];
-            let allTurns = [];
-            const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
-            for (const die of uniqueDice) {
-                for (let pipIndex = 1; pipIndex <= 24; pipIndex++) {
-                    if (this.pips[pipIndex].top === this.turn) {
-                        let temp = pipIndex - die;
-                        if (this.turn === game_1.Player.white) {
-                            if (pipIndex >= 13 && temp <= 12)
-                                temp = 25;
-                            if (temp < 1)
-                                temp += 24;
-                        }
-                        const currentMove = game_1.Move(pipIndex, game_1.clamp(temp));
-                        if (this.isMoveValid(currentMove.from, currentMove.to)) {
-                            // deep copy game board using ramda
-                            let newBoard = ramda_1.clone(this);
-                            newBoard.doMove(currentMove.from, currentMove.to);
-                            const nextTurns = newBoard.allPossibleTurns();
-                            if (nextTurns.length) {
-                                for (const nextMoves of nextTurns) {
-                                    allTurns.push([currentMove, ...nextMoves]);
-                                    if ([currentMove, ...nextMoves].length === 4)
-                                        throw "Possible turn of length 4 detected";
-                                }
-                            }
-                            else {
-                                allTurns.push([currentMove]);
-                            }
-                        }
-                    }
-                }
-            }
-            return allTurns;
-        };
     }
     // Initialize the board for a game of fevga
     initGame() {
@@ -169,6 +131,45 @@ class Fevga extends game_1.Board {
                 this.state[this.turn]++;
             }
         }
+    }
+    ;
+    // Returns 2D array of Move objects
+    allPossibleTurns() {
+        if (this.dice.length === 0)
+            return [];
+        let allTurns = [];
+        const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
+        for (const die of uniqueDice) {
+            for (let pipIndex = 1; pipIndex <= 24; pipIndex++) {
+                if (this.pips[pipIndex].top === this.turn) {
+                    let temp = pipIndex - die;
+                    if (this.turn === game_1.Player.white) {
+                        if (pipIndex >= 13 && temp <= 12)
+                            temp = 25;
+                        if (temp < 1)
+                            temp += 24;
+                    }
+                    const currentMove = game_1.Move(pipIndex, game_1.clamp(temp));
+                    if (this.isMoveValid(currentMove.from, currentMove.to)) {
+                        // deep copy game board using ramda
+                        let newBoard = ramda_1.clone(this);
+                        newBoard.doMove(currentMove.from, currentMove.to);
+                        const nextTurns = newBoard.allPossibleTurns();
+                        if (nextTurns.length) {
+                            for (const nextMoves of nextTurns) {
+                                allTurns.push([currentMove, ...nextMoves]);
+                                if ([currentMove, ...nextMoves].length === 4)
+                                    throw "Possible turn of length 4 detected";
+                            }
+                        }
+                        else {
+                            allTurns.push([currentMove]);
+                        }
+                    }
+                }
+            }
+        }
+        return allTurns;
     }
     ;
 }

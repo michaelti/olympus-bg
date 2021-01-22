@@ -86,7 +86,7 @@ class Plakoto extends Board {
     };
 
     // Returns 2D array of Move objects
-    allPossibleTurns = function (): _Move[] {
+    allPossibleTurns() {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
@@ -117,7 +117,7 @@ class Plakoto extends Board {
 
     // Is the board in a state where the game has just ended?
     // Returns the number of points won
-    isGameOver = function () {
+    isGameOver() {
         const home = { [Player.white]: this.pips[1], [Player.black]: this.pips[24] };
 
         // Both player's starting checkers have been trapped: game is a draw
