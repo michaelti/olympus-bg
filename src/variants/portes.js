@@ -6,9 +6,6 @@ const Portes = () => ({
     // Inherit from generic board
     ...Board(),
 
-    // Implement Portes-specific methods and variables
-    bar: { [Player.white]: 0, [Player.black]: 25 },
-
     // Initialize the board for a game of portes
     initGame() {
         this.pips[25] = Pip(0, Player.black);
@@ -29,10 +26,11 @@ const Portes = () => ({
     // return:  Returns a boolean
     isMoveValid(from, to) {
         to = clamp(to);
+        const bar = (this.turn === Player.white) ? 0 : 25;
         if (this.pips[from].top !== this.turn) return false;
 
         // Entering the board
-        if (this.pips[this.bar[this.turn]].size > 0) {
+        if (this.pips[bar].size > 0) {
             if (from !== 25 && from !== 0) return false;
             if (this.pips[to].top !== this.turn && this.pips[to].size > 1) return false;
             if (!this.dice.includes(pipDistance(from, to))) return false;
@@ -74,10 +72,12 @@ const Portes = () => ({
 
     doMove(from, to) {
         to = clamp(to);
+        const bar = (this.turn === Player.white) ? 0 : 25;
+        const otherBar = (this.turn === Player.white) ? 25 : 0;
         this.recentMove = Move(from, to);
 
         // From pip
-        if (this.pips[this.bar[this.turn]].size > 0) {
+        if (this.pips[bar].size > 0) {
             // Don't change owner of the bar ever
         } else if (this.pips[from].size === 1) {
             this.pips[from].top = Player.neither;
@@ -95,7 +95,7 @@ const Portes = () => ({
         } else {
             // Sending opponent to the bar
             if (this.pips[to].bot === this.otherPlayer()) {
-                this.pips[this.bar[this.otherPlayer()]].size++;
+                this.pips[otherBar].size++;
                 if (this.turn === Player.white) this.recentMove.subMove = Move(to, 25);
                 if (this.turn === Player.black) this.recentMove.subMove = Move(to, 0);
             } else {
