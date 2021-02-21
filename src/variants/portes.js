@@ -111,7 +111,7 @@ const Portes = () => ({
     },
 
     // Returns 2D array of Move objects
-    allPossibleTurns() {
+    allPossibleTurns(isBot) {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
@@ -127,8 +127,10 @@ const Portes = () => ({
                         if (nextTurns.length) {
                             for (const nextMoves of nextTurns) {
                                 allTurns.push([currentMove, ...nextMoves]);
-                                if ([currentMove, ...nextMoves].length === 4)
-                                    throw "Possible turn of length 4 detected";
+                                if (!isBot) {
+                                    if ([currentMove, ...nextMoves].length === 4)
+                                        throw "Possible turn of length 4 detected";
+                                }
                             }
                         } else {
                             allTurns.push([currentMove]);
