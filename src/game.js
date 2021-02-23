@@ -63,7 +63,7 @@ exports.Board = () => ({
 
     rollDice() {
         // Roll a 6-sided die, 2 times
-        this.diceRolled = random.dice(6, 2);
+        this.diceRolled = [2, 2];
 
         // Doubles
         if (this.diceRolled[0] === this.diceRolled[1])
@@ -75,6 +75,7 @@ exports.Board = () => ({
         this.maxTurnLength = 0;
         this.turnValidity = TurnMessage.invalid;
         try {
+            this.possibleTurns = null;
             this.possibleTurns = this.allPossibleTurns();
             for (const turn of this.possibleTurns) {
                 if (turn.length > this.maxTurnLength) this.maxTurnLength = turn.length;

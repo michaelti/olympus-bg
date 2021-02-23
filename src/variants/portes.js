@@ -9,14 +9,23 @@ const Portes = () => ({
     // Initialize the board for a game of portes
     initGame() {
         this.pips[25] = Pip(0, Player.black);
-        this.pips[24] = Pip(2, Player.black); // Black moves towards pip 1 (decreasing)
-        this.pips[19] = Pip(5, Player.white);
+        this.pips[23] = Pip(2, Player.black);
+        this.pips[21] = Pip(2, Player.white);
+        this.pips[19] = Pip(2, Player.white);
+        this.pips[18] = Pip(1, Player.black);
         this.pips[17] = Pip(3, Player.white);
-        this.pips[13] = Pip(5, Player.black);
-        this.pips[12] = Pip(5, Player.white);
-        this.pips[8] = Pip(3, Player.black);
-        this.pips[6] = Pip(5, Player.black);
-        this.pips[1] = Pip(2, Player.white); // White moves towards pip 24 (increasing)
+        this.pips[16] = Pip(1, Player.black);
+        this.pips[14] = Pip(2, Player.white);
+        this.pips[13] = Pip(3, Player.black);
+        this.pips[12] = Pip(2, Player.white);
+        this.pips[11] = Pip(1, Player.black);
+        this.pips[9] = Pip(1, Player.black);
+        this.pips[8] = Pip(2, Player.black);
+        this.pips[6] = Pip(4, Player.black);
+        this.pips[5] = Pip(1, Player.white);
+        this.pips[4] = Pip(1, Player.white);
+        this.pips[2] = Pip(1, Player.white);
+        this.pips[1] = Pip(1, Player.white);
         this.pips[0] = Pip(0, Player.white);
     },
 
