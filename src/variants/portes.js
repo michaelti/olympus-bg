@@ -6,6 +6,8 @@ const Portes = () => ({
     // Inherit from generic board
     ...Board(),
 
+    uniqueTurns: null,
+
     // Initialize the board for a game of portes
     initGame() {
         this.pips[25] = Pip(0, Player.black);
@@ -135,10 +137,18 @@ const Portes = () => ({
                         const nextTurns = newBoard.allPossibleTurns();
                         if (nextTurns.length) {
                             for (const nextMoves of nextTurns) {
-                                allTurns.push([currentMove, ...nextMoves]);
-                                if (!isBot) {
-                                    if ([currentMove, ...nextMoves].length === 4)
+                                const turn = [currentMove, ...nextMoves];
+                                allTurns.push(turn);
+                                if (turn.length === 4) {
+                                    if (isBot) {
+                                        const destinations = turn.map((move) => move.to);
+                                        const sorted = destinations.sort();
+                                        const string = sorted.join("");
+
+                                        this.uniqueTurns.set(string, turn);
+                                    } else {
                                         throw "Possible turn of length 4 detected";
+                                    }
                                 }
                             }
                         } else {
