@@ -63,7 +63,7 @@ exports.Board = () => ({
 
     rollDice() {
         // Roll a 6-sided die, 2 times
-        this.diceRolled = [2, 2];
+        this.diceRolled = random.dice(6, 2);
 
         // Doubles
         if (this.diceRolled[0] === this.diceRolled[1])
