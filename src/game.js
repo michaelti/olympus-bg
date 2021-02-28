@@ -45,6 +45,8 @@ exports.Board = () => ({
     possibleTurns: null,
     maxTurnLength: 0,
     turnValidity: TurnMessage.invalid,
+    // Property used by bot
+    uniqueTurns: null,
 
     publicProperties() {
         return {

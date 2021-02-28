@@ -6,9 +6,6 @@ const Portes = () => ({
     // Inherit from generic board
     ...Board(),
 
-    // Propetry used by bot
-    uniqueTurns: null,
-
     // Initialize the board for a game of portes
     initGame() {
         this.pips[25] = Pip(0, Player.black);
@@ -141,7 +138,7 @@ const Portes = () => ({
                                     }
                                 }
                             }
-                        } else { // nextTurns.length == 0
+                        } else {
                             allTurns.push([currentMove]);
                         }
                     }
