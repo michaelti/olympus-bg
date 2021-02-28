@@ -95,7 +95,7 @@ const Plakoto = () => ({
         for (const die of uniqueDice) {
             for (let pipIndex = 1; pipIndex <= 24; pipIndex++) {
                 if (this.pips[pipIndex].top === this.turn) {
-                    const currentMove = Move(pipIndex, clamp(this.turn * die + Number(pipIndex)));
+                    const currentMove = Move(pipIndex, clamp(this.turn * die + pipIndex));
                     if (this.isMoveValid(currentMove.from, currentMove.to)) {
                         // deep copy game board using ramda
                         let newBoard = clone(this);
