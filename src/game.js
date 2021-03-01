@@ -1,5 +1,6 @@
 const { Random, MersenneTwister19937 } = require("random-js");
 const random = new Random(MersenneTwister19937.autoSeed());
+const clone = require("ramda.clone");
 
 // Enum-like object
 const Player = Object.freeze({
@@ -24,14 +25,14 @@ exports.Variant = Object.freeze({
 });
 
 // Clamps "to" in range 0–25
-exports.clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
+const clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
 
 // Returns the distance between two pips (1–12)
 const pipDistance = function (from, to) {
     const dist = Math.abs(to - from);
     return dist <= 12 ? dist : 24 - dist;
 };
-exports.Move = (from, to) => ({ from, to });
+const Move = (from, to) => ({ from, to });
 exports.reverseMove = (move) => ({ from: move.to, to: move.from });
 
 exports.Board = () => ({
@@ -47,6 +48,8 @@ exports.Board = () => ({
     turnValidity: TurnMessage.invalid,
     // Property used by bot
     uniqueTurns: null,
+    WS: 1,
+    BS: 24,
 
     publicProperties() {
         return {
@@ -76,17 +79,13 @@ exports.Board = () => ({
 
         this.maxTurnLength = 0;
         this.turnValidity = TurnMessage.invalid;
-        try {
-            this.possibleTurns = null;
-            this.possibleTurns = this.allPossibleTurns();
-            for (const turn of this.possibleTurns) {
-                if (turn.length > this.maxTurnLength) this.maxTurnLength = turn.length;
-            }
-            if (this.maxTurnLength === 0) this.turnValidity = TurnMessage.validZero;
-        } catch (four) {
-            // Code optimization when there's a possible 4-move turn
-            this.maxTurnLength = 4;
+
+        this.possibleTurns = null;
+        this.possibleTurns = this.allPossibleTurns();
+        for (const turn of this.possibleTurns) {
+            if (turn.length > this.maxTurnLength) this.maxTurnLength = turn.length;
         }
+        if (this.maxTurnLength === 0) this.turnValidity = TurnMessage.validZero;
     },
 
     // Returns the player who's turn it ISN'T
@@ -129,9 +128,40 @@ exports.Board = () => ({
         }
         return TurnMessage.valid;
     },
-
-    // Dummy function, must be implemented by each backgammon variant
-    allPossibleTurns: () => null,
+    // Returns 2D array of Move objects
+    allPossibleTurns(isBot) {
+        if (this.dice.length === 0) return [];
+        let allTurns = [];
+        const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
+        for (const die of uniqueDice) {
+            for (let pipIndex = this.WS; pipIndex <= this.BS; pipIndex++) {
+                if (this.pips[pipIndex].top === this.turn) {
+                    const dest = this.getDestination(pipIndex, die);
+                    const currentMove = Move(pipIndex, dest);
+                    if (this.isMoveValid(currentMove.from, currentMove.to)) {
+                        // deep copy game board using ramda
+                        let newBoard = clone(this);
+                        newBoard.doMove(currentMove.from, currentMove.to);
+                        const nextTurns = newBoard.allPossibleTurns();
+                        if (nextTurns.length) {
+                            for (const nextMoves of nextTurns) {
+                                const turn = [currentMove, ...nextMoves];
+                                allTurns.push(turn);
+                                if (isBot && turn.length === 4) {
+                                    const destinations = turn.map((move) => move.to);
+                                    const string = destinations.sort().join("");
+                                    this.uniqueTurns.set(string, turn);
+                                }
+                            }
+                        } else {
+                            allTurns.push([currentMove]);
+                        }
+                    }
+                }
+            }
+        }
+        return allTurns;
+    },
 });
 
 const Pip = (size = 0, owner = Player.neither) => ({
@@ -143,6 +173,8 @@ const Pip = (size = 0, owner = Player.neither) => ({
 const rollDie = () => random.die(6);
 
 exports.Player = Player;
+exports.Move = Move;
+exports.clamp = clamp;
 exports.TurnMessage = TurnMessage;
 exports.pipDistance = pipDistance;
 exports.Pip = Pip;

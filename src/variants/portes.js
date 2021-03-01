@@ -1,10 +1,12 @@
 const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const clone = require("ramda.clone");
 const { range } = require("../util");
 
 const Portes = () => ({
     // Inherit from generic board
     ...Board(),
+
+    WS: 0,
+    BS: 25,
 
     // Initialize the board for a game of portes
     initGame() {
@@ -110,42 +112,9 @@ const Portes = () => ({
         else this.dice.pop();
     },
 
-    // Returns 2D array of Move objects
-    allPossibleTurns(isBot) {
-        if (this.dice.length === 0) return [];
-        let allTurns = [];
-        const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
-        for (const die of uniqueDice) {
-            for (let pipIndex = 0; pipIndex <= 25; pipIndex++) {
-                if (this.pips[pipIndex].top === this.turn) {
-                    const currentMove = Move(pipIndex, clamp(this.turn * die + pipIndex));
-                    if (this.isMoveValid(currentMove.from, currentMove.to)) {
-                        // deep copy game board using ramda
-                        let newBoard = clone(this);
-                        newBoard.doMove(currentMove.from, currentMove.to);
-                        const nextTurns = newBoard.allPossibleTurns();
-                        if (nextTurns.length) {
-                            for (const nextMoves of nextTurns) {
-                                const turn = [currentMove, ...nextMoves];
-                                allTurns.push(turn);
-                                if (turn.length === 4) {
-                                    if (isBot) {
-                                        const destinations = turn.map((move) => move.to);
-                                        const string = destinations.sort().join("");
-                                        this.uniqueTurns.set(string, turn);
-                                    } else {
-                                        throw "Possible turn of length 4 detected";
-                                    }
-                                }
-                            }
-                        } else {
-                            allTurns.push([currentMove]);
-                        }
-                    }
-                }
-            }
-        }
-        return allTurns;
+    getDestination(start, die) {
+        const end = clamp(this.turn * die + start);
+        return end;
     },
 });
 
