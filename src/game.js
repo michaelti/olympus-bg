@@ -12,10 +12,10 @@ exports.Board = () => ({
     possibleTurns: null,
     maxTurnLength: 0,
     turnValidity: TurnMessage.invalid,
+    firstPip: 1,
+    lastPip: 24,
     // Property used by bot
     uniqueTurns: null,
-    WS: 1,
-    BS: 24,
 
     publicProperties() {
         return {
@@ -43,15 +43,15 @@ exports.Board = () => ({
         // Sort smallest to largest
         this.dice = [...this.diceRolled].sort((a, b) => a - b);
 
-        this.maxTurnLength = 0;
-        this.turnValidity = TurnMessage.invalid;
-
+        // Set to null first to ensure garbage collection
         this.possibleTurns = null;
         this.possibleTurns = this.allPossibleTurns();
+
+        this.maxTurnLength = 0;
         for (const turn of this.possibleTurns) {
             if (turn.length > this.maxTurnLength) this.maxTurnLength = turn.length;
         }
-        if (this.maxTurnLength === 0) this.turnValidity = TurnMessage.validZero;
+        this.turnValidity = this.maxTurnLength === 0 ? TurnMessage.validZero : TurnMessage.invalid;
     },
 
     // Returns the player who's turn it ISN'T
@@ -94,16 +94,17 @@ exports.Board = () => ({
         }
         return TurnMessage.valid;
     },
-    // Returns 2D array of Move objects
+
+    // Returns a 2D array of Move objects
     allPossibleTurns(isBot) {
         if (this.dice.length === 0) return [];
         let allTurns = [];
         const uniqueDice = this.dice[0] === this.dice[1] ? [this.dice[0]] : this.dice;
         for (const die of uniqueDice) {
-            for (let pipIndex = this.WS; pipIndex <= this.BS; pipIndex++) {
-                if (this.pips[pipIndex].top === this.turn) {
-                    const dest = this.getDestination(pipIndex, die);
-                    const currentMove = Move(pipIndex, dest);
+            for (let pipStart = this.firstPip; pipStart <= this.lastPip; pipStart++) {
+                if (this.pips[pipStart].top === this.turn) {
+                    const pipEnd = this.getDestination(pipStart, die);
+                    const currentMove = Move(pipStart, pipEnd);
                     if (this.isMoveValid(currentMove.from, currentMove.to)) {
                         // deep copy game board using ramda
                         let newBoard = clone(this);

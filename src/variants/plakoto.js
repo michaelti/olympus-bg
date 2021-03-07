@@ -5,7 +5,6 @@ const Plakoto = () => ({
     // Inherit from generic board
     ...Board(),
 
-    // Implement Plakoto-specific methods and variables
     // Initialize the board for a game of plakoto
     initGame() {
         this.pips[24] = Pip(15, Player.black); // Black moves towards pip 1 (decreasing)

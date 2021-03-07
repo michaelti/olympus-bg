@@ -5,8 +5,9 @@ const Portes = () => ({
     // Inherit from generic board
     ...Board(),
 
-    WS: 0,
-    BS: 25,
+    // Portes-specific properties
+    firstPip: 0,
+    lastPip: 25,
 
     // Initialize the board for a game of portes
     initGame() {
