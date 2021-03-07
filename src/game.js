@@ -1,4 +1,4 @@
-const { random, Move, Player, TurnMessage, Pip } = require("./util");
+const { Move, Pip, Player, TurnMessage, clamp, random, pipDistance } = require("./util");
 const clone = require("ramda.clone");
 
 exports.Board = () => ({
