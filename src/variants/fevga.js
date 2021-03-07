@@ -1,5 +1,5 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const { range } = require("../util");
+const { Board } = require("../game");
+const { range, Pip, Move, Player, clamp, pipDistance } = require("../util");
 const State = Object.freeze({ start: 1, firstAway: 2, default: 3 });
 
 const Fevga = () => ({

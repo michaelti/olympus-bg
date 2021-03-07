@@ -1,39 +1,5 @@
-const { Random, MersenneTwister19937 } = require("random-js");
-const random = new Random(MersenneTwister19937.autoSeed());
+const { random, Move, Player, TurnMessage, Pip } = require("./util");
 const clone = require("ramda.clone");
-
-// Enum-like object
-const Player = Object.freeze({
-    neither: 0,
-    white: 1,
-    black: -1,
-});
-
-const TurnMessage = Object.freeze({
-    valid: 1,
-    validZero: 2,
-    invalid: 0,
-    invalidMoreMoves: -1,
-    invalidLongerMove: -2,
-});
-
-// Variant of backgammon
-exports.Variant = Object.freeze({
-    portes: 1,
-    plakoto: 2,
-    fevga: 3,
-});
-
-// Clamps "to" in range 0–25
-const clamp = (to) => (to < 0 ? 0 : to > 25 ? 25 : to);
-
-// Returns the distance between two pips (1–12)
-const pipDistance = function (from, to) {
-    const dist = Math.abs(to - from);
-    return dist <= 12 ? dist : 24 - dist;
-};
-const Move = (from, to) => ({ from, to });
-exports.reverseMove = (move) => ({ from: move.to, to: move.from });
 
 exports.Board = () => ({
     turn: null,
@@ -163,19 +129,3 @@ exports.Board = () => ({
         return allTurns;
     },
 });
-
-const Pip = (size = 0, owner = Player.neither) => ({
-    size: size,
-    top: owner,
-    bot: owner,
-});
-
-const rollDie = () => random.die(6);
-
-exports.Player = Player;
-exports.Move = Move;
-exports.clamp = clamp;
-exports.TurnMessage = TurnMessage;
-exports.pipDistance = pipDistance;
-exports.Pip = Pip;
-exports.rollDie = rollDie;

@@ -1,5 +1,5 @@
-const { Board, Pip, Move, Player, clamp, pipDistance } = require("../game");
-const { range } = require("../util");
+const { Board } = require("../game");
+const { range, Pip, Move, Player, clamp, pipDistance } = require("../util");
 
 const Portes = () => ({
     // Inherit from generic board
