@@ -85,11 +85,6 @@ const Plakoto = () => ({
         else this.dice.pop();
     },
 
-    getDestination(start, die) {
-        const end = clamp(this.turn * die + start);
-        return end;
-    },
-
     // Is the board in a state where the game has just ended?
     // Returns the number of points won
     isGameOver() {

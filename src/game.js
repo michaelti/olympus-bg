@@ -95,6 +95,11 @@ exports.Board = () => ({
         return TurnMessage.valid;
     },
 
+    // Calculates destination pip of a move
+    getDestination(start, die) {
+        return clamp(this.turn * die + start);
+    },
+
     // Returns a 2D array of Move objects
     allPossibleTurns(isBot) {
         if (this.dice.length === 0) return [];

@@ -112,11 +112,6 @@ const Portes = () => ({
         if (this.dice[0] >= pipDistance(from, to)) this.dice.shift();
         else this.dice.pop();
     },
-
-    getDestination(start, die) {
-        const end = clamp(this.turn * die + start);
-        return end;
-    },
 });
 
 exports.Board = Portes;

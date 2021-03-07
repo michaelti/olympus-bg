@@ -118,6 +118,7 @@ const Fevga = () => ({
         }
     },
 
+    // Calculates destination pip of a move
     getDestination(start, die) {
         let end = start - die;
         if (this.turn === Player.white) {
